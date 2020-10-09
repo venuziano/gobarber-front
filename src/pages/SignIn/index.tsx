@@ -8,14 +8,23 @@ import logoImg from '../../assets/logo.svg';
 
 import { Background, Container, Content } from './styles';
 
+import { useAuth } from '../../hooks/AuthContext';
+
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import getValidationErrors from '../../Utils/getValidationErrors';
 
+interface SigInFormData {
+  email: string;
+  password: string;
+}
+
 const Sigin: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
-  const handleSubmit = useCallback(async (data: object) => {
+  const { signIn } = useAuth();
+
+  const handleSubmit = useCallback(async (data: SigInFormData) => {
     try {
       formRef.current?.setErrors({});
 
@@ -28,6 +37,11 @@ const Sigin: React.FC = () => {
 
       await schema.validate(data, {
         abortEarly: false,
+      });
+
+      signIn({
+        email: data.email,
+        password: data.password,
       });
     } catch (err) {
       const errors = getValidationErrors(err);
